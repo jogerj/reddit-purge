@@ -27,6 +27,7 @@ client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 ```
 # Purge options
 `limitation = None`
+
 Number of recent comments/submissions to delete. Set to None if no limits (purge ALL comments/submissions). Set to 10 will purge recent 10, etc.
 
 `purge_comments = True`
@@ -48,12 +49,15 @@ Set to True to only edit posts to `redact_msg` without deleting them.
 Use multiprocessing. Set to False if problems occur
 
 `show_comment = True`
+
 Show comment body
 
 `show_title = True`
+
 Show submission titles
 
 `controversial_first = True`
+
 Start purge from controversial first instead of newest
 
 # Usage
