@@ -5,14 +5,14 @@ class PurgeReddit:
     """
     A class that contains functions to purge reddit posts.
 
-    =================== ===================================================
+    =================== ======================================================
     Attribute           Description
-    =================== ===================================================
+    =================== ======================================================
     ``reddit``          An instance of :class:`praw.Reddit`, pre-initialized
                         with ``client_id``, ``client_secret``, ``user_agent``,
                         ``username``, and ``password`` attributes.
     ``options``         Dictionary of options with str as keys
-    =================== ===================================================
+    =================== ======================================================
     """
 
     def __init__(self, reddit, options):
@@ -73,18 +73,18 @@ class PurgeReddit:
         username = self._reddit.config.username
         comments = self._reddit.redditor(username).comments
         tries = 0
-        if self._options['controversial_first']:
-            posts = comments.controversial(limit=self._options['limitation'])
-        else:
-            posts = comments.new(limit=self._options['limitation'])
         while count > 0:
+            if self._options['controversial_first']:
+                posts = comments.controversial(limit=self._options['limitation'])
+            else:
+                posts = comments.new(limit=self._options['limitation'])
             for comment in posts:
                 try:
-                    comment.edit(self._options['redact_msg'])
+                    msg = f"Comment {comment} in {comment.submission}"
                     if self._options['show_comment']:
-                        msg = f"Comment {comment}: \"{comment.body[0:140]}\" redacted"
-                    else:
-                        msg = f"Comment {comment} redacted"
+                        msg += f": \"{comment.body[0:140]}\""
+                    msg += " redacted"
+                    comment.edit(self._options['redact_msg'])
                     if not self._options['redact_only']:
                         comment.delete()
                         msg += " and deleted"
@@ -94,9 +94,8 @@ class PurgeReddit:
                 except Exception as exc:
                     print(f"Failed to purge comment {comment}: ", exc)
                     skipped.append(comment)
-                    count -= 1
-            # retry skipped comments up to 3 times (if >1000 left)
-            if count > 1000 and len(skipped) > 0 and tries <= 3:
+            # retry skipped comments up to 3 times
+            if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
                 print(f"Retrying {len(skipped)} skipped comments.")
                 count += len(skipped)
                 tries += 1
@@ -125,25 +124,25 @@ class PurgeReddit:
         username = self._reddit.config.username
         submissions = self._reddit.redditor(username).submissions
         tries = 0
-        if self._options['controversial_first']:
-            posts = submissions.new(limit=self._options['limitation'])
-        else:
-            posts = submissions.controversial(limit=self._options['limitation'])
         while count > 0:
+            if self._options['controversial_first']:
+                posts = submissions.new(limit=self._options['limitation'])
+            else:
+                posts = submissions.controversial(limit=self._options['limitation'])
             for submission in posts:
                 try:
                     if self._options['show_title']:
                         msg = f"Submission {submission}: \"{submission.title[0:140]}\""
                     else:
                         msg = f"Submission {submission}"
-                    # selftext == '' if post is image/link
+                    # selftext == '' if post is media/link
                     if submission.selftext != '':
                         submission.edit(self._options['redact_msg'])
                         msg += " redacted"
                     elif self._options['redact_only']:
                         # not redacted/deleted
                         skipped.append(submission)
-                        msg += " skipped"
+                        msg += " skipped (Media/Link)"
                     if not self._options['redact_only']:
                         submission.delete()
                         msg += " and deleted"
@@ -153,8 +152,8 @@ class PurgeReddit:
                 except Exception as exc:
                     print(f"Failed to purge submission {submission}: ", exc)
                     skipped.append(submission)
-            # retry skipped submissions up to 3 times (if >1000 left)
-            if count > 1000 and len(skipped) > 0 and tries <= 3:
+            # retry skipped submissions up to 3 times
+            if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
                 print(f"Retrying {len(skipped)} skipped submissions.")
                 count += len(skipped)
                 tries += 1

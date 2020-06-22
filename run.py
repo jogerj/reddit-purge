@@ -25,7 +25,7 @@ purge_submissions = True
 ## Edit comments/submissions to this before deletion. This prevents archiving.
 redact_msg = "[redacted]"
 ## Set to True to only edit posts to `redact_msg` without deleting them.
-redact_only = False
+redact_only = True
 ## Use multiprocessing. Set to False if problems occur
 use_multiprocessing = True
 ## Show comment body
@@ -114,7 +114,8 @@ if __name__ == '__main__':
             skipped_comments = skipped_comments_queue.get()
             p1.join()
             if len(skipped_comments) > 0:
-                skipped_id = list(map(lambda c: c.id, skipped_comments))
+                skipped_id = list(map(lambda c: f"{c.submission}/{c}",
+                                      skipped_comments))
                 print(f"Comments not purged:\n", skipped_id)
             else:
                 print("All comments purged!")
@@ -132,7 +133,8 @@ if __name__ == '__main__':
         if purge_comments:
             skipped_comments = pr.purge_comments(comment_count)
             if len(skipped_comments) > 0:
-                skipped_id = list(map(lambda c: c.id, skipped_comments))
+                skipped_id = list(map(lambda c: f"{c.submission}/{c}",
+                                      skipped_comments))
                 serial_msg += f"Comments not purged:\n{skipped_id}\n"
             else:
                 serial_msg += "All comments purged!\n"
