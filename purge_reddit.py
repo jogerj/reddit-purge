@@ -95,11 +95,12 @@ class PurgeReddit:
                     print(f"Failed to purge comment {comment}: ", exc)
                     skipped.append(comment)
                     count -= 1
-            # retry skipped comments up to 3 times
-            if count >= 1000 and len(skipped) > 0 and tries <= 3:
+            # retry skipped comments up to 3 times (if >1000 left)
+            if count > 1000 and len(skipped) > 0 and tries <= 3:
                 print(f"Retrying {len(skipped)} skipped comments.")
                 count += len(skipped)
                 tries += 1
+                skipped = list()
         if return_queue is not None:
             return_queue.put(skipped)
         return skipped
@@ -152,11 +153,12 @@ class PurgeReddit:
                 except Exception as exc:
                     print(f"Failed to purge submission {submission}: ", exc)
                     skipped.append(submission)
-            # retry skipped submissions up to 3 times
-            if count >= 1000 and len(skipped) > 0 and tries <= 3:
+            # retry skipped submissions up to 3 times (if >1000 left)
+            if count > 1000 and len(skipped) > 0 and tries <= 3:
                 print(f"Retrying {len(skipped)} skipped submissions.")
                 count += len(skipped)
                 tries += 1
+                skipped = list()
         if return_queue is not None:
             return_queue.put(skipped)
         return skipped
