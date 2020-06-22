@@ -1,12 +1,12 @@
 # Reddit-Purge
-Simple python script using praw API to mass delete reddit submissions and/or comments. Supports multiprocessing
+Simple python script using praw API to mass delete reddit submissions and/or comments. Supports multiprocessing and redacts your messages (edit to something else) before deletion to prevent archiving. Only requires [praw](https://praw.readthedocs.io/en/latest/) and Python 3.5+
 
 # Installation
 
 1. `git clone https://github.com/jogerj/reddit-purge.git`
 2. `cd reddit-purge`
 3. `pip -r install requirements`
-4. Configure `run.py`
+4. Configure `run.py` (see below)
 
 # Getting API keys
 
@@ -25,45 +25,26 @@ user_agent = 'PurgeBot'
 client_id = 'CLIENTIDq00zTA'
 client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 ```
-# Purge options
-`limitation = None`
-
-Number of recent comments/submissions to delete. Set to None if no limits (purge ALL comments/submissions). Set to 10 will purge recent 10, etc.
-
-`purge_comments = True`
-
-`purge_submissions = True`
-
-Set to False to not purge comments/submissions.
-
-`redact_msg = "[redacted]"`
-
-Edit comments/submissions to this before deletion. This prevents archiving.
-
-`redact_only = False`
-
-Set to True to only edit posts to `redact_msg` without deleting them.
-
-`use_multiprocessing = True`
-
-Use multiprocessing. Set to False if problems occur
-
-`show_comment = True`
-
-Show comment body
-
-`show_title = True`
-
-Show submission titles
-
-`controversial_first = True`
-
-Start purge from controversial first instead of newest
 
 # Usage
 Run with `python3 run.py`
 
+# Purge options
+| Options                                             | Description                                                                                                                                      |
+|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `limitation = None`                                 | Number of recent comments/submissions to delete. Set to None if no limits (purge ALL comments/submissions). Set to 10 will purge recent 10, etc. |
+| `purge_comments = True`  `purge_submissions = True` | Set to False to not purge comments/submissions.                                                                                                  |
+| `redact_msg = "[redacted]"`                         | Edit comments/submissions to this before deletion. This prevents archiving.                                                                      |
+| `redact_only = False`                               | Set to True to only edit posts to `redact_msg` without deleting them.                                                                            |
+| `use_multiprocessing = True`                        | Use multiprocessing. Set to False if problems occur                                                                                              |
+| `show_comment = True`                               | Show comment body                                                                                                                                |
+| `show_title = True`                                 | Show submission titles                                                                                                                           |
+| `controversial_first = True`                        | Start purge from controversial first instead of newest                                                                                           |
 # To-Do
 * Add whitelisting
 * Use `.cfg` file
 * Better logging
+
+# More info
+* [praw](https://praw.readthedocs.io/en/latest/)
+* Original code based on [this post in r/learnpython](https://www.reddit.com/r/learnpython/comments/aoq9yj/reddit_script_to_delete_all_comments_and/)
