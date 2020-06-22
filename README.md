@@ -1,5 +1,5 @@
 # Reddit-Purge
-Simple python script using praw API to mass delete reddit submissions and/or comments. Supports multiprocessing and redacts your messages (edit to something else) before deletion to prevent archiving. Only requires [praw](https://praw.readthedocs.io/en/latest/) and Python 3.5+ with minimum dependencies (runs on Windows/macOS/Linux).
+Simple python script using praw API to mass delete reddit submissions and/or comments. Supports multiprocessing and redacts your messages (edit to something else) before deletion to prevent archiving. Requires only [praw](https://praw.readthedocs.io/en/latest/) and Python 3.5+ (runs on Windows/macOS/Linux).
 
 # Installation
 
