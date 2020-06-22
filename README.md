@@ -6,10 +6,10 @@ Simple python script using praw API to mass delete reddit submissions and/or com
 1. `git clone https://github.com/jogerj/reddit-purge.git`
 2. `cd reddit-purge`
 3. `pip -r install requirements`
-4. Configure `purge_reddit.py`
+4. Configure `run.py`
 
 # Usage
-Run with `python3 purge_reddit.py`
+Run with `python3 run.py`
 
 # Getting API keys
 
