@@ -25,7 +25,7 @@ purge_submissions = True
 ## Edit comments/submissions to this before deletion. This prevents archiving.
 redact_msg = "[redacted]"
 ## Set to True to only edit posts to `redact_msg` without deleting them.
-redact_only = False
+redact_only = True
 ## Use multiprocessing. Set to False if problems occur
 use_multiprocessing = True
 ## Show comment body
