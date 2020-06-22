@@ -33,6 +33,7 @@ show_comment = True
 show_title = True
 ## Start purge from controversial first instead of newest
 controversial_first = True
+
 #### DO NOT EDIT BELOW ####
 
 # Init
