@@ -140,13 +140,15 @@ class PurgeReddit:
                     if submission.selftext != '':
                         submission.edit(self._options['redact_msg'])
                         msg += " redacted"
+                        if not self._options['redact_only']:
+                            msg += " and"
                     elif self._options['redact_only']:
                         # not redacted/deleted
                         skipped.append(submission)
                         msg += " skipped (Media/Link)"
                     if not self._options['redact_only']:
                         submission.delete()
-                        msg += " and deleted"
+                        msg += " deleted"
                     count -= 1
                     msg += f". {count} to go."
                     print(msg)
