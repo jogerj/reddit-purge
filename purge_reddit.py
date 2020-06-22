@@ -80,7 +80,7 @@ class PurgeReddit:
                 posts = comments.new(limit=self._options['limitation'])
             for comment in posts:
                 try:
-                    msg = f"Comment {comment}"
+                    msg = f"Comment {comment} in {comment.submission}"
                     if self._options['show_comment']:
                         msg += f": \"{comment.body[0:140]}\""
                     msg += " redacted"
@@ -136,14 +136,14 @@ class PurgeReddit:
                         msg = f"Submission {submission}: \"{submission.title[0:140]}\""
                     else:
                         msg = f"Submission {submission}"
-                    # selftext == '' if post is image/link
+                    # selftext == '' if post is media/link
                     if submission.selftext != '':
                         submission.edit(self._options['redact_msg'])
                         msg += " redacted"
                     elif self._options['redact_only']:
                         # not redacted/deleted
                         skipped.append(submission)
-                        msg += " skipped"
+                        msg += " skipped (Media/Link)"
                     if not self._options['redact_only']:
                         submission.delete()
                         msg += " and deleted"
