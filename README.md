@@ -25,7 +25,7 @@ user_agent = 'PurgeBot'
 client_id = 'CLIENTIDq00zTA'
 client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 ```
-
+<sup>**Disclaimer**: Configuration above is only an example. You will need to setup your own configuration!</sup>
 # Usage
 Run with `python3 run.py`
 
@@ -46,6 +46,7 @@ Run with `python3 run.py`
 * Better logging
 
 # More info
+* [Request your reddit data](https://www.reddit.com/settings/data-request) (if you want to backup before deletion)
 * [pip installation](https://pip.pypa.io/en/stable/installing/)
 * [praw](https://praw.readthedocs.io/en/latest/)
 * Original code based on [this post in r/learnpython](https://www.reddit.com/r/learnpython/comments/aoq9yj/reddit_script_to_delete_all_comments_and/)
