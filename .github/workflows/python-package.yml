@@ -41,4 +41,4 @@ jobs:
       uses: peter-evans/autopep8@v1.2.0
       with:
       # Arguments to pass to autopep8
-      args: # default is --help
+        args: # default is --help
