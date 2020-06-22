@@ -32,3 +32,4 @@ client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 # To-Do
 * Add whitelisting
 * Use `.cfg` file
+* Better logging
