@@ -94,7 +94,6 @@ class PurgeReddit:
                 except Exception as exc:
                     print(f"Failed to purge comment {comment}: ", exc)
                     skipped.append(comment)
-                    count -= 1
             # retry skipped comments up to 3 times
             if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
                 print(f"Retrying {len(skipped)} skipped comments.")
