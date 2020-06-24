@@ -17,7 +17,9 @@ Simple python script using praw API to mass delete reddit submissions and/or com
 5. Click Create
 
 Use the script name, 14 chars client ID, and 27 chars key you're shown, enter them in `run.py`.
+
 ![image](https://user-images.githubusercontent.com/30559735/85273897-7df04a00-b47e-11ea-8b35-0e827d3d0cec.png)
+
 ```
 username = '' # optional
 password = '' # optional
