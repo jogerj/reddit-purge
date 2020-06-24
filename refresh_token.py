@@ -16,7 +16,8 @@ def authorize_token(reddit):
     :return: Refresh token returned from authorization
     """
     state = str(random.randint(0, 65000))
-    url = reddit.auth.url(['identity', 'edit', 'read', 'history'], state, 'permanent')
+    url = reddit.auth.url(['identity', 'edit', 'read', 'history'],
+                          state, 'permanent')
     input("Press ENTER to open web browser to authenticate with OAuth...")
     webbrowser.open(url)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
