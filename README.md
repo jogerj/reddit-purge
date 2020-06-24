@@ -26,7 +26,6 @@ client_id = 'CLIENTIDq00zTA'
 client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 ```
 If username and/or password are left blank, OAuth will be used to acquire an access token.
-If 
 
 <sup>**Disclaimer**: Configuration above is only an example. You will need to setup your own configuration!</sup>
 # Usage
