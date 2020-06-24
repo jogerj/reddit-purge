@@ -41,6 +41,8 @@ debug = False
 
 #### DO NOT EDIT BELOW ####
 
+if limitation is not None:
+    limitation = max(int(limitation), 1000)
 options = {'controversial_first': controversial_first,
            'debug': debug,
            'limitation': limitation,
@@ -110,6 +112,8 @@ if __name__ == '__main__':
         exit()
     # Authkey all good! Check total to purge and confirm
     pr = PurgeReddit(reddit, options)
+    comment_count = 0
+    submission_count = 0
     if purge_comments:
         print("Calculating number of comments, please wait...")
         comment_count = pr.get_comment_total()
@@ -119,7 +123,7 @@ if __name__ == '__main__':
         else:
             confirm = input(f"{comment_count} comments will be "
                             + ("redacted" if redact_only else "deleted")
-                            + ". Are you sure? (N/y) ")
+                            + ". Are you sure? [y/N] ")
             if not confirm.lower().startswith("y"):
                 print("Comment purge aborted.")
                 purge_comments = False
@@ -132,7 +136,7 @@ if __name__ == '__main__':
         else:
             confirm = input(f"{submission_count} submissions will be "
                             + ("redacted" if redact_only else "deleted")
-                            + ". Are you sure? (N/y) ")
+                            + ". Are you sure? [y/N] ")
             if not confirm.lower().startswith("y"):
                 print("Submission purge aborted.")
                 purge_submissions = False
@@ -140,65 +144,83 @@ if __name__ == '__main__':
         print("Nothing to purge today. Have a nice day!")
         exit()
     # Begin purge
-    if use_multiprocessing:
-        # Init multiprocessing and start each thread
-        skipped_comments_queue = mp.Queue()
-        skipped_submissions_queue = mp.Queue()
-        if purge_comments:
-            p1 = mp.Process(target=pr.purge_comments,
-                            args=(comment_count, skipped_comments_queue,))
-            p1.start()
-            sleep(1)  # delay to avoid errors
-        if purge_submissions:
-            p2 = mp.Process(target=pr.purge_submissions,
-                            args=(submission_count, skipped_submissions_queue,))
-            p2.start()
-        # Check if finished
-        while purge_comments:
-            if p1.is_alive():
-                sleep(1)
-            else:
-                break
-        while purge_submissions:
-            if p2.is_alive():
-                sleep(1)
-            else:
-                break
-        # Get skipped posts
-        if purge_comments:
-            skipped_comments = skipped_comments_queue.get()
-            p1.join()
-            if len(skipped_comments) > 0:
-                skipped_id = list(map(lambda c: f"{c.submission}/{c}",
-                                      skipped_comments))
-                print(f"Comments not purged:\n", skipped_id)
-            else:
-                print("All comments purged!")
-        if purge_submissions:
-            skipped_submissions = skipped_submissions_queue.get()
-            p2.join()
-            if len(skipped_submissions) > 0:
-                skipped_id = list(map(lambda s: s.id, skipped_submissions))
-                print("Submissions not purged:\n", skipped_id)
-            else:
-                print("All submissions purged!")
-    else:
-        # Serial method
-        serial_msg = ""
-        if purge_comments:
-            skipped_comments = pr.purge_comments(comment_count)
-            if len(skipped_comments) > 0:
-                skipped_id = list(map(lambda c: f"{c.submission}/{c}",
-                                      skipped_comments))
-                serial_msg += f"Comments not purged:\n{skipped_id}"
-            else:
-                serial_msg += "All comments purged!"
-        if purge_submissions:
-            skipped_submissions = pr.purge_submissions(submission_count)
-            if len(skipped_submissions) > 0:
-                skipped_id = list(map(lambda s: s.id, skipped_submissions))
-                serial_msg += f"Submissions not purged:\n{skipped_id}"
-            else:
-                serial_msg += "All submissions purged!"
-        print(serial_msg)
+    while True:
+        if use_multiprocessing:
+            # Init multiprocessing and start each thread
+            skipped_comments_queue = mp.Queue()
+            skipped_submissions_queue = mp.Queue()
+            if purge_comments:
+                p1 = mp.Process(target=pr.purge_comments,
+                                args=(comment_count, skipped_comments_queue,))
+                p1.start()
+                sleep(1)  # delay to avoid errors
+            if purge_submissions:
+                p2 = mp.Process(target=pr.purge_submissions,
+                                args=(submission_count, skipped_submissions_queue,))
+                p2.start()
+            # Check if finished
+            while purge_comments:
+                if p1.is_alive():
+                    sleep(1)
+                else:
+                    break
+            while purge_submissions:
+                if p2.is_alive():
+                    sleep(1)
+                else:
+                    break
+            # Get skipped posts
+            if purge_comments:
+                skipped_comments = skipped_comments_queue.get()
+                p1.join()
+                if len(skipped_comments) > 0:
+                    skipped_id = list(map(lambda c: f"{c.submission}/{c}",
+                                          skipped_comments))
+                    print(f"Comments not purged:\n", skipped_id)
+                else:
+                    print("All comments purged!")
+            if purge_submissions:
+                skipped_submissions = skipped_submissions_queue.get()
+                p2.join()
+                if len(skipped_submissions) > 0:
+                    skipped_id = list(map(lambda s: s.id, skipped_submissions))
+                    print("Submissions not purged:\n", skipped_id)
+                else:
+                    print("All submissions purged!")
+        else:
+            # Serial method
+            serial_msg = ""
+            if purge_comments:
+                skipped_comments = pr.purge_comments(comment_count)
+                if len(skipped_comments) > 0:
+                    skipped_id = list(map(lambda c: f"{c.submission}/{c}",
+                                          skipped_comments))
+                    serial_msg += f"Comments not purged:\n{skipped_id}"
+                else:
+                    serial_msg += "All comments purged!"
+            if purge_submissions:
+                skipped_submissions = pr.purge_submissions(submission_count)
+                if len(skipped_submissions) > 0:
+                    skipped_id = list(map(lambda s: s.id, skipped_submissions))
+                    serial_msg += f"Submissions not purged:\n{skipped_id}"
+                else:
+                    serial_msg += "All submissions purged!"
+            print(serial_msg)
+        # if there were more than 1000, prompt to delete more
+        if (submission_count >= 1000 or comment_count >= 1000) \
+                and not redact_only:
+            confirm = input("There were more than 1000 submissions/comments!",
+                            "Delete more? [y/N] ")
+            if confirm.lower().startswith('y'):
+                if limitation is not None:
+                    limitation -= 1000
+                print("Calculating remaining submissions/comments...")
+                if purge_comments:
+                    comment_count = pr.get_comment_total()
+                    print(f"{comment_count} remaining...")
+                if purge_submissions:
+                    submission_count = pr.get_submission_total()
+                    print(f"{submission_count} remaining...")
+        else:
+            break
     print("Done!")

@@ -36,6 +36,9 @@ class PurgeReddit:
         for _ in self._reddit.user.me().comments.new(
                 limit=self._options['limitation']):
             count += 1
+        if count >= 1000:
+            print("Reached max number of retrievable comments",
+                  "(>1000 submissions found)")
         return count
 
     def get_submission_total(self):
@@ -48,6 +51,9 @@ class PurgeReddit:
         for _ in self._reddit.user.me().submissions.new(
                 limit=self._options['limitation']):
             count += 1
+        if count >= 1000:
+            print("Reached max number of retrievable submissions",
+                  "(>1000 submissions found)")
         return count
 
     def purge_comments(self, count: int = None, return_queue: queues = None):
@@ -77,7 +83,7 @@ class PurgeReddit:
                 try:
                     msg = f"Comment {comment} in {comment.submission}"
                     if self._options['show_comment']:
-                        msg += f": \"{comment.body[0:140]}\""
+                        msg += f": \"{comment.body[0:80]}...\""
                     msg += " redacted"
                     comment.edit(self._options['redact_msg'])
                     if not self._options['redact_only']:
