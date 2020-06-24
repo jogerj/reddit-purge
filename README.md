@@ -32,19 +32,22 @@ If username and/or password are left blank, OAuth will be used to acquire an acc
 Run with `python3 run.py`
 
 # Purge options
-| Options                                             | Description                                                                                                                                      |
-|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| `limitation = None`                                 | Number of recent comments/submissions to delete. Set to None if no limits (purge ALL comments/submissions). Set to 10 will purge recent 10, etc. |
-| `purge_comments = True`  `purge_submissions = True` | Set to False to not purge comments/submissions.                                                                                                  |
-| `redact_msg = "[redacted]"`                         | Edit comments/submissions to this before deletion. This prevents archiving.                                                                      |
-| `redact_only = False`                               | Set to True to only edit posts to `redact_msg` without deleting them.                                                                            |
-| `use_multiprocessing = True`                        | Use multiprocessing. Set to False if problems occur                                                                                              |
-| `show_comment = True`                               | Show comment body                                                                                                                                |
-| `show_title = True`                                 | Show submission titles                                                                                                                           |
-| `controversial_first = True`                        | Start purge from controversial first instead of newest                                                                                           |
-| `debug = False`                                     | Debug mode                                                                                                                                       |
+| Options                                               | Description                                                                                                                                      |
+|-------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `limitation = None`                                   | Number of recent comments/submissions to delete. Set to None if no limits (purge ALL comments/submissions). Set to 10 will purge recent 10, etc. |
+| `purge_comments = True`  `purge_submissions = True`   | Set to False to not purge comments/submissions.                                                                                                  |
+| `redact_msg = "[redacted]"`                           | Edit comments/submissions to this before deletion. This prevents archiving.                                                                      |
+| `redact_only = False`                                 | Set to True to only edit posts to `redact_msg` without deleting them.                                                                            |
+| `use_multiprocessing = True`                          | Use multiprocessing. Set to False if problems occur                                                                                              |
+| `show_comment = True`                                 | Show comment body                                                                                                                                |
+| `show_title = True`                                   | Show submission titles                                                                                                                           |
+| `controversial_first = True`                          | Start purge from controversial first instead of newest                                                                                           |
+| `max_score = None`                                    | Only purge posts with `score <= max_score`. Set to None if no threshold                                                                          |
+| `no_prompt = False`                                   | Set to True to not prompt at all. Use with EXTRA caution!                                                                                        |
+| `comment_whitelist = []` `submissions_whitelist = []` | Whitelist by ID e.g. `['id1', 'id2', 'id3']`                                                                                                     |
+| `debug = False`                                       | Debug mode                                                                                                                                       |
 # To-Do
-* Add whitelisting
+* ~~Add whitelisting~~ Use `whitelist.txt`
 * Use `.cfg` file
 * Better logging
 
