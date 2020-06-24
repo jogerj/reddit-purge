@@ -68,7 +68,7 @@ class PurgeReddit:
         skipped = list()
         comments = self._reddit.user.me().comments
         tries = 0
-        while count > 0:
+        while count > 0 and len(skipped) < 1000:
             if self._options['controversial_first']:
                 posts = comments.controversial(limit=self._options['limitation'])
             else:
@@ -119,7 +119,7 @@ class PurgeReddit:
         skipped = list()
         submissions = self._reddit.user.me().submissions
         tries = 0
-        while count > 0:
+        while count > 0 and len(skipped) < 1000:
             if self._options['controversial_first']:
                 posts = submissions.new(limit=self._options['limitation'])
             else:
