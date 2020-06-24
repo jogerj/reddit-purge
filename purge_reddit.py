@@ -25,6 +25,8 @@ class PurgeReddit:
         reddit.validate_on_submit = True
         self._reddit = reddit
         self._options = options
+        if self._options['max_score'] is None:
+            self._options['max_score'] = float('-inf')
 
     def get_comment_total(self):
         """
@@ -81,29 +83,41 @@ class PurgeReddit:
                 posts = comments.new(limit=self._options['limitation'])
             for comment in posts:
                 try:
-                    msg = f"Comment {comment} in {comment.submission}"
+                    msg = f"Comment {comment.submission}/{comment} in {comment.subreddit}"
                     if self._options['show_comment']:
                         msg += f": \"{comment.body[0:80]}...\""
-                    msg += " redacted"
-                    comment.edit(self._options['redact_msg'])
-                    if not self._options['redact_only']:
-                        comment.delete()
-                        msg += " and deleted"
+                    if f'{comment}' in self._options['comment_whitelist']:
+                        # skip whitelisted
+                        msg += " whitelisted"
+                        skipped.append(comment)
+                    elif comment.score > self._options['max_score']:
+                        msg += " skipped (above max score)"
+                        skipped.append(comment)
+                    else:
+                        msg += " redacted"
+                        comment.edit(self._options['redact_msg'])
+                        if not self._options['redact_only']:
+                            comment.delete()
+                            msg += " and deleted"
                     count -= 1
                     msg += f". {count} to go."
                     print(msg)
                 except Exception as exc:
-                    print(f"Failed to purge comment {comment}: ", exc)
+                    print(f"Failed to purge comment {comment}:", exc)
                     count -= 1
                     skipped.append(comment)
+                if count <= 0:
+                    break
             # retry skipped comments up to 3 times
             if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
                 print(f"Retrying {len(skipped)} skipped comments.")
                 count += len(skipped)
                 tries += 1
                 skipped = list()
+        print(f"Comments purge finished! {len(skipped)} could not be purged.", end='')
         if return_queue is not None:
             return_queue.put(skipped)
+        print("OK")
         return skipped
 
     def purge_submissions(self, count: int = None,
@@ -132,36 +146,48 @@ class PurgeReddit:
                 posts = submissions.controversial(limit=self._options['limitation'])
             for submission in posts:
                 try:
+                    msg = f"Submission {submission} in {submission.subreddit}"
                     if self._options['show_title']:
-                        msg = f"Submission {submission}: \"{submission.title[0:140]}\""
-                    else:
-                        msg = f"Submission {submission}"
-                    # selftext == '' if post is media/link
-                    if submission.selftext != '':
-                        submission.edit(self._options['redact_msg'])
-                        msg += " redacted"
-                        if not self._options['redact_only']:
-                            msg += " and"
-                    elif self._options['redact_only']:
-                        # not redacted/deleted
+                        msg += f":\"{submission.title[0:140]}...\""
+                    if f'{submission}' in self._options['submissions_whitelist']:
+                        # skip whitelisted
+                        msg += " whitelisted"
                         skipped.append(submission)
-                        msg += " skipped (Media/Link)"
-                    if not self._options['redact_only']:
-                        submission.delete()
-                        msg += " deleted"
+                    elif submission.score > self._options['max_score']:
+                        # max score threshold
+                        msg += " skipped (above max score)"
+                        skipped.append(submission)
+                    else:
+                        # selftext == '' if post is media/link
+                        if submission.selftext != '':
+                            submission.edit(self._options['redact_msg'])
+                            msg += " redacted"
+                            if not self._options['redact_only']:
+                                msg += " and"
+                        elif self._options['redact_only']:
+                            # not redacted/deleted
+                            skipped.append(submission)
+                            msg += " skipped (Media/Link)"
+                        if not self._options['redact_only']:
+                            submission.delete()
+                            msg += " deleted"
                     count -= 1
                     msg += f". {count} to go."
                     print(msg)
                 except Exception as exc:
-                    print(f"Failed to purge submission {submission}: ", exc)
+                    print(f"Failed to purge submission {submission}:", exc)
                     count -= 1
                     skipped.append(submission)
+                if count <= 0:
+                    break
             # retry skipped submissions up to 3 times
             if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
                 print(f"Retrying {len(skipped)} skipped submissions.")
                 count += len(skipped)
                 tries += 1
                 skipped = list()
+        print("Submissions purge finished! Compiling results...", end='')
         if return_queue is not None:
             return_queue.put(skipped)
+        print("OK")
         return skipped
