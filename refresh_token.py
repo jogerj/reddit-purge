@@ -1,14 +1,3 @@
-#!/usr/bin/env python3
-
-"""This example demonstrates the flow for retrieving a refresh token.
-
-In order for this example to work your application's redirect URI must be set
-to http://localhost:8080.
-
-This tool can be used to conveniently create refresh tokens for later use with
-your web application OAuth2 credentials.
-
-"""
 import random
 import socket
 import webbrowser
@@ -22,11 +11,13 @@ def authorize_token(reddit):
     """
     Opens the web browser to ask for refresh token.
     Authorizes a refresh token for given reddit instance.
+
     :param reddit: Reddit instance to authorize
     :return: Refresh token returned from authorization
     """
     state = str(random.randint(0, 65000))
-    url = reddit.auth.url(['identity', 'edit', 'read', 'history'], state, 'permanent')
+    url = reddit.auth.url(['identity', 'edit', 'read', 'history'],
+                          state, 'permanent')
     input("Press ENTER to open web browser to authenticate with OAuth...")
     webbrowser.open(url)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

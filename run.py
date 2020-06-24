@@ -136,11 +136,10 @@ if __name__ == '__main__':
             if not confirm.lower().startswith("y"):
                 print("Submission purge aborted.")
                 purge_submissions = False
-
     if not (purge_submissions or purge_comments):
         print("Nothing to purge today. Have a nice day!")
         exit()
-
+    # Begin purge
     if use_multiprocessing:
         # Init multiprocessing and start each thread
         skipped_comments_queue = mp.Queue()
@@ -154,7 +153,6 @@ if __name__ == '__main__':
             p2 = mp.Process(target=pr.purge_submissions,
                             args=(submission_count, skipped_submissions_queue,))
             p2.start()
-
         # Check if finished
         while purge_comments:
             if p1.is_alive():
@@ -192,9 +190,9 @@ if __name__ == '__main__':
             if len(skipped_comments) > 0:
                 skipped_id = list(map(lambda c: f"{c.submission}/{c}",
                                       skipped_comments))
-                serial_msg += f"Comments not purged:\n{skipped_id}\n"
+                serial_msg += f"Comments not purged:\n{skipped_id}"
             else:
-                serial_msg += "All comments purged!\n"
+                serial_msg += "All comments purged!"
         if purge_submissions:
             skipped_submissions = pr.purge_submissions(submission_count)
             if len(skipped_submissions) > 0:
