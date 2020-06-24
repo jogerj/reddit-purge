@@ -1,5 +1,5 @@
 # Reddit-Purge
-Simple python script using praw API to mass delete reddit submissions and/or comments. Supports multiprocessing and redacts your messages (edit to something else) before deletion to prevent archiving. Requires only [praw](https://praw.readthedocs.io/en/latest/) and Python 3.5+ (runs on Windows/macOS/Linux).
+Simple python script using praw API to mass delete reddit submissions and/or comments. Supports 2FA and login without password, multiprocessing and redacts your messages (edit to something else) before deletion to prevent archiving. Requires only [praw](https://praw.readthedocs.io/en/latest/) and Python 3.5+ (runs on Windows/macOS/Linux).
 
 # Installation
 
@@ -19,12 +19,15 @@ Simple python script using praw API to mass delete reddit submissions and/or com
 Use the script name, 14 chars client ID, and 27 chars key you're shown, enter them in `run.py`.
 ![image](https://user-images.githubusercontent.com/30559735/85273897-7df04a00-b47e-11ea-8b35-0e827d3d0cec.png)
 ```
-username = 'username'
-password = 'password'
+username = '' # optional
+password = '' # optional
 user_agent = 'PurgeBot'
 client_id = 'CLIENTIDq00zTA'
 client_secret = 'SECRETswQ_r0u7KlVojc4SECRET'
 ```
+If username and/or password are left blank, OAuth will be used to acquire an access token.
+If 
+
 <sup>**Disclaimer**: Configuration above is only an example. You will need to setup your own configuration!</sup>
 # Usage
 Run with `python3 run.py`
@@ -40,6 +43,7 @@ Run with `python3 run.py`
 | `show_comment = True`                               | Show comment body                                                                                                                                |
 | `show_title = True`                                 | Show submission titles                                                                                                                           |
 | `controversial_first = True`                        | Start purge from controversial first instead of newest                                                                                           |
+| `debug = False`                                     | Debug mode                                                                                                                                       |
 # To-Do
 * Add whitelisting
 * Use `.cfg` file
