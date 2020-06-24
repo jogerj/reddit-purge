@@ -192,9 +192,9 @@ if __name__ == '__main__':
             if len(skipped_comments) > 0:
                 skipped_id = list(map(lambda c: f"{c.submission}/{c}",
                                       skipped_comments))
-                serial_msg += f"Comments not purged:\n{skipped_id}\n"
+                serial_msg += f"Comments not purged:\n{skipped_id}"
             else:
-                serial_msg += "All comments purged!\n"
+                serial_msg += "All comments purged!"
         if purge_submissions:
             skipped_submissions = pr.purge_submissions(submission_count)
             if len(skipped_submissions) > 0:
