@@ -21,7 +21,7 @@ client_secret = '###########################'  # '27 char client secret'
 ## Set to 10 will purge recent 10, etc.
 limitation = None
 ## Only purge posts with score <= this number. Set to None if no threshold
-max_score = 0
+max_score = None
 ## Set to False to not purge comments/submissions
 purge_comments = True
 purge_submissions = True
@@ -41,14 +41,12 @@ controversial_first = True
 no_prompt = False
 ## Debug mode
 debug = False
-## Whitelist e.g. ['id1', 'id2', 'id3']
+## Whitelist e.g.`['id1', 'id2', 'id3']`
 comment_whitelist = []
 submissions_whitelist = []
 
 #### DO NOT EDIT BELOW ####
 
-if limitation is not None:
-    limitation = min(int(limitation), 1000)
 options = {'controversial_first': controversial_first,
            'debug': debug,
            'limitation': limitation,
