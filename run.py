@@ -41,6 +41,7 @@ controversial_first = True
 no_prompt = False
 ## Debug mode
 debug = False
+
 ## Whitelist e.g.`['id1', 'id2', 'id3']`
 comment_whitelist = []
 submissions_whitelist = []
