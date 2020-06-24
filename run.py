@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import multiprocessing as mp
 import praw
+import prawcore.exceptions
+import refresh_token
 from purge_reddit import PurgeReddit
 from time import sleep
 
@@ -8,8 +10,8 @@ from time import sleep
 
 # Your login details
 
-username = 'username'
-password = 'password'
+username = ''  # optional
+password = ''  # optional
 user_agent = 'PurgeBot'  # Bot name
 client_id = '##############'  # '14 char client ID'
 client_secret = '###########################'  # '27 char client secret'
@@ -25,7 +27,7 @@ purge_submissions = True
 ## Edit comments/submissions to this before deletion. This prevents archiving.
 redact_msg = "[redacted]"
 ## Set to True to only edit posts to `redact_msg` without deleting them.
-redact_only = True
+redact_only = False
 ## Use multiprocessing. Set to False if problems occur
 use_multiprocessing = True
 ## Show comment body
@@ -34,24 +36,79 @@ show_comment = True
 show_title = True
 ## Start purge from controversial first instead of newest
 controversial_first = True
+## Debug mode
+debug = False
 
 #### DO NOT EDIT BELOW ####
 
-# Init
-reddit = praw.Reddit(
-    client_id=client_id,
-    client_secret=client_secret,
-    user_agent=user_agent,
-    username=username,
-    password=password)
 options = {'controversial_first': controversial_first,
+           'debug': debug,
            'limitation': limitation,
            'redact_msg': redact_msg,
            'redact_only': redact_only,
            'show_title': show_title,
            'show_comment': show_comment}
+
 if __name__ == '__main__':
-    # Check total to purge and confirm
+    # Initialize reddit
+    if password != '' and username != '':
+        # use username and password
+        reddit = praw.Reddit(
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent,
+            username=username,
+            password=password,
+            redirect_uri="http://localhost:8080")
+    else:
+        # use OAuth
+        reddit = praw.Reddit(
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent,
+            redirect_uri="http://localhost:8080")
+    # Check authentication key
+    print("Checking authentication...")
+    if client_id == '##############' \
+            or client_secret == '###########################':
+        print("Missing client ID/secret key!")
+        exit()
+    elif len(client_id) != 14 or len(client_secret) != 27:
+        print("Failed to authenticate!",
+              "Your client ID/secret key isn't the correct length.")
+        print("Please check your configuration again!")
+        exit()
+    try:
+        # Test authentication
+        if reddit.user.me() is None:
+            refresh_token.authorize_token(reddit)
+    except prawcore.exceptions.ResponseException as exc:
+        if f'{exc}'.find('401') != -1:
+            # 401 error, invalid key ?
+            print("ERROR 401: There's a problem with your authentication key."
+                  + "\nPlease check your configuration again!")
+        else:
+            print(f"\nResponseException: {exc}")
+            if debug:
+                raise exc
+        exit()
+    except prawcore.exceptions.OAuthException:
+        print("Failed to authenticate credentials! Possible causes:")
+        print("1. Wrong username/password.")
+        print("2. 2FA is enabled.")
+        print("3. Invalid client ID/secret key.")
+        try:
+            refresh_token.authorize_token(reddit)
+        except refresh_token.TokenException as exc:
+            print(f"TokenException: {exc}")
+            if debug:
+                raise exc
+            exit()
+    except refresh_token.TokenException as exc:
+        print(f"TokenException: {exc}")
+        print("Could not authorize token!")
+        exit()
+    # Authkey all good! Check total to purge and confirm
     pr = PurgeReddit(reddit, options)
     if purge_comments:
         print("Calculating number of comments, please wait...")

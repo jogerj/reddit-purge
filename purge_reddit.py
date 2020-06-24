@@ -15,7 +15,7 @@ class PurgeReddit:
     =================== ======================================================
     """
 
-    def __init__(self, reddit, options):
+    def __init__(self, reddit, options: dict):
         """
         Initializes :class:`PurgeReddit` instance
 
@@ -30,12 +30,10 @@ class PurgeReddit:
         """
         Counts how many comments were made by 'username'.
 
-        :return:
-            int: number of comments
+        :return: number of comments
         """
         count = 0
-        for c in self._reddit.redditor(
-                self._reddit.config.username).comments.new(
+        for _ in self._reddit.user.me().comments.new(
                 limit=self._options['limitation']):
             count += 1
         return count
@@ -44,12 +42,10 @@ class PurgeReddit:
         """
         Counts how many submissions were made by 'username'.
 
-        :return:
-            int: number of submissions
+        :return: number of submissions
         """
         count = 0
-        for s in self._reddit.redditor(
-                self._reddit.config.username).submissions.new(
+        for _ in self._reddit.user.me().submissions.new(
                 limit=self._options['limitation']):
             count += 1
         return count
@@ -70,8 +66,7 @@ class PurgeReddit:
             count = self.get_comment_total()
         print(f"Purging {count} comments...")
         skipped = list()
-        username = self._reddit.config.username
-        comments = self._reddit.redditor(username).comments
+        comments = self._reddit.user.me().comments
         tries = 0
         while count > 0:
             if self._options['controversial_first']:
@@ -93,6 +88,7 @@ class PurgeReddit:
                     print(msg)
                 except Exception as exc:
                     print(f"Failed to purge comment {comment}: ", exc)
+                    count -= 1
                     skipped.append(comment)
             # retry skipped comments up to 3 times
             if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
@@ -109,7 +105,7 @@ class PurgeReddit:
         """
         Purge submissions made by 'username'. If a submission could not be
         purged, it will be added to the list of skipped submissions.
-        If running on redact-only mode, only image/video/link submissions
+        If running on redact-only mode, image/video/link submissions
         will be skipped.
 
         :param count: Number of submissions to purge, if unspecified then all.
@@ -118,11 +114,10 @@ class PurgeReddit:
         :return: List of skipped submissions.
         """
         if count is None:
-            count = self.get_submission_total()
+            count = self.get_submission_total
         print(f"Purging {count} submissions...")
         skipped = list()
-        username = self._reddit.config.username
-        submissions = self._reddit.redditor(username).submissions
+        submissions = self._reddit.user.me().submissions
         tries = 0
         while count > 0:
             if self._options['controversial_first']:
@@ -153,6 +148,7 @@ class PurgeReddit:
                     print(msg)
                 except Exception as exc:
                     print(f"Failed to purge submission {submission}: ", exc)
+                    count -= 1
                     skipped.append(submission)
             # retry skipped submissions up to 3 times
             if len(skipped) > 0 and tries <= 3 and not self._options['redact_only']:
