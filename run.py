@@ -13,7 +13,7 @@ username = ''  # optional
 password = ''  # optional
 user_agent = 'PurgeBot'  # Bot name
 client_id = '##############'  # '14 char client ID'
-client_secret = '###########################'  # '27 char client secret'
+client_secret = '##############################'  # '30 char client secret'
 
 # Purge options
 ## Number of recent comments/submissions to delete.
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             or client_secret == '###########################':
         print("Missing client ID/secret key!")
         exit()
-    elif len(client_id) != 14 or len(client_secret) != 27:
+    elif len(client_id) != 14 or len(client_secret) != 30:
         print("Failed to authenticate!",
               "Your client ID/secret key isn't the correct length.")
         print("Please check your configuration again!")
@@ -183,7 +183,8 @@ if __name__ == '__main__':
             if purge_comments:
                 skipped_comments = skipped_comments_queue.get()
                 p1.join()
-                if len(skipped_comments) > 0:
+                if 
+(skipped_comments) > 0:
                     skipped_id = list(map(
                         lambda c:
                         f"{c.submission}/{c} in {c.subreddit}",
